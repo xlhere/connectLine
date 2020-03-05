@@ -1,6 +1,7 @@
 const line = {
     init: function (questionObj, answerObj) {
         this.draw = SVG('draw').size("100%", "100%");
+        console.log('🌹',this.draw)
         this.lineArr = [];
         this.currentInfo = {};
         this.createList(questionObj)
@@ -20,6 +21,7 @@ const line = {
                     obj = {};
                 obj.beginValue = element.question;
                 obj.line = this.createLine();
+                console.log('👌',this)
                 this.lineArr.push(obj)
                 content.push(item);
             });
@@ -82,34 +84,6 @@ const line = {
 
             self.currentInfo = '';
         })
-        /* 默认答案 */
-        $('#j-default').click(function (e) {
-            self.itemForEach()
-        })
-        /* 重置 */
-        $('#j-reset').click(function (e) {
-            self.lineArr.forEach(el => {
-                $(el.beginElement).removeClass("selected");
-                $(el.beginElement).attr('data-selected', '')
-                $(el.endElement).removeClass("selected");
-                el.line.hide()
-            })
-            $('.result-display').html('')
-        })
-        /* 确认答案 */
-        $('#j-submit').click(function (e) {
-            let result = [];
-            $('.question-list li').each(function (el) {
-                let question = $(this).attr('data-question'),
-                    userSelectd = $(this).attr('data-selected');
-                if (userSelectd) {
-                    let item = `<li>${question} = ${userSelectd}</li>`;
-                    result.push(item)
-                }
-
-            })
-            result.length ? $('.result-display').html(result) : alert('您还未选择！')
-        })
     },
     /* 绑定父亲事件事件 */
     bindParentsEvent: function (params) {
@@ -137,6 +111,7 @@ const line = {
     createLine: function () {
         let self = this,
             line = self.draw.line();
+            console.log('👌',line,self.draw)
         line.stroke({
             color: "#67C23A",
             width: 2,
@@ -194,57 +169,6 @@ const line = {
             });
         }); */
         return line;
-    },
-    /* 遍历question-list，存在默认answer，就去answer-list找到，进行连接 */
-    itemForEach: function (flag) {
-        let self = this,
-            parentPosition = $('#draw').offset();
-
-        if ($('.question-list li').length && $('.answer-list li').length) {
-
-            $('li').removeClass('selected')
-            $('.question-list li').each(function (params) {
-                let obj = {},
-                    _this = $(this),
-                    beginValue = _this.attr('data-question'),
-                    endValue = _this.attr('data-answer');
-
-                obj = self.lineArr.find(el => el.beginValue == beginValue);
-                obj.beginElement = this;
-                obj.begin = {};
-                obj.begin.y = _this.offset().top - parentPosition.top + 15;
-                obj.begin.x = _this.offset().left - parentPosition.left + 110;
-                $(this).attr('data-selected', '');
-                $('.result-display').html('')
-                // obj.line.plot(obj.begin.x, obj.begin.y, obj.begin.x, obj.begin.y)
-                //判断是否存在初始答案
-                if (endValue && !flag) {
-                    $('.answer-list li').each(function (params) {
-                        if ($(this).html() == endValue) {
-                            obj.end = {};
-
-                            obj.end.y = $(this).offset().top - parentPosition.top + 15;
-                            obj.end.x = $(this).offset().left - parentPosition.left - 20;
-                            obj.endElement = this;
-                            obj.endValue = endValue;
-                            obj.line.stroke({
-                                color: "#E6A23C",
-                            });
-                            obj.line.plot(obj.begin.x, obj.begin.y, obj.end.x, obj.end.y);
-                            obj.line.show()
-                            $(this).addClass("selected")
-                            _this.addClass("selected")
-                        }
-                    })
-
-
-                }
-
-
-
-
-            })
-        }
     },
     /* 获取鼠标的坐标 */
     getMousePos: function (event) {
